@@ -1,2 +1,2 @@
 # Java-PLII
-Repo to learn about JAVA language and its developments
+Repo to learn about JAVA language and his developments
