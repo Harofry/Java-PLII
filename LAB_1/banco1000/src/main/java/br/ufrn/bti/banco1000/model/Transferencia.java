@@ -1,13 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package br.ufrn.bti.banco1000.model;
+public class Transferencia extends Movimentacao {
+    private Conta contaDestino;
 
-/**
- *
- * @author vinicius
- */
-public class Transferencia {
-    
+    public Transferencia(double valor, Conta contaOrigem, Conta contaDestino) {
+        super("Transferência", valor, contaOrigem);
+        this.contaDestino = contaDestino;
+    }
+
+    public Conta getContaDestino() {
+        return contaDestino;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " | Conta Destino: " + contaDestino.getNumero();
+    }
 }
