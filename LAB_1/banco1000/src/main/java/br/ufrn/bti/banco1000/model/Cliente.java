@@ -4,10 +4,6 @@
  */
 package br.ufrn.bti.banco1000.model;
 
-/**
- *
- * @author vinicius
- */
 public class Cliente {
     private String nome;
     private String cpf;
