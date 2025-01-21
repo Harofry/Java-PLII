@@ -11,3 +11,5 @@ public abstract class Conta implements Serializable {
     }
 
     public String getNumero() {
+        return numero;
+    }
