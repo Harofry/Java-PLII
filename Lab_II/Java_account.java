@@ -35,3 +35,29 @@ public abstract class Conta implements Serializable {
         saldo -= valor;
     }
 
+    public abstract void aplicarTaxasOuRendimentos();
+}
+
+// Classe da contacorrente
+public class ContaCorrente extends Conta {
+    private double taxaManutencao;
+
+    public ContaCorrente(String numero, double saldoInicial, double taxaManutencao) {
+        super(numero, saldoInicial);
+        this.taxaManutencao = taxaManutencao;
+    }
+
+    @Override
+    public void aplicarTaxasOuRendimentos() {
+        sacar(taxaManutencao);
+    }
+}
+
+// Classe da contapoupanca
+public class ContaPoupanca extends Conta {
+    private double taxaRendimento;
+
+    public ContaPoupanca(String numero, double saldoInicial, double taxaRendimento) {
+        super(numero, saldoInicial);
+        this.taxaRendimento = taxaRendimento;
+    }
