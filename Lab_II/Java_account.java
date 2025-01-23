@@ -82,7 +82,7 @@ public class ContaSalario extends Conta {
     @Override
     public void sacar(double valor) {
         if (saquesRealizados >= limiteSaques) {
-            throw new IllegalArgumentException("Lamentamos, mas o imite de saques foi excedido.");
+            throw new IllegalArgumentException("Lamento, mas o imite de saques foi excedido.");
         }
         super.sacar(valor);
         saquesRealizados++;
@@ -90,5 +90,55 @@ public class ContaSalario extends Conta {
 
     @Override
     public void aplicarTaxasOuRendimentos() {
+    }
+}
+/ Classe Agencia
+public class Agencia {
+    private String codigo;
+    private List<Conta> contas;
+
+    public Agencia(String codigo) {
+        this.codigo = codigo;
+        this.contas = new ArrayList<>();
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void adicionarConta(Conta conta) {
+        contas.add(conta);
+    }
+
+    public Conta buscarConta(String numero) {
+        for (Conta conta : contas) {
+            if (conta.getNumero().equals(numero)) {
+                return conta;
+            }
+        }
+        throw new IllegalArgumentException("a conta solictiada não foi encontrada.");
+    }
+
+    public void aplicarTaxasOuRendimentos() {
+        for (Conta conta : contas) {
+            conta.aplicarTaxasOuRendimentos();
+        }
+    }
+
+    public List<Conta> getContas() {
+        return contas;
+    }
+
+    // utiliza métodos de persistência
+    public void salvarDados(String arquivo) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(arquivo))) {
+            oos.writeObject(contas);
+        }
+    }
+
+    public void carregarDados(String arquivo) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+            contas = (List<Conta>) ois.readObject();
+        }
     }
 }
