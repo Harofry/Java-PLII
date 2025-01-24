@@ -160,4 +160,4 @@ public void salvarDadosCSV(String arquivo) throws IOException {
         }
     }
 }
-
+// tratamemto de excessão
