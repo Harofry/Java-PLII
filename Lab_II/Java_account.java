@@ -77,7 +77,7 @@ public class ContaSalario extends Conta {
         this.limiteSaques = limiteSaques;
         this.saquesRealizados = 0;
     }
-
+ // tratamento de excessões
     @Override
     public void sacar(double valor) {
         if (saquesRealizados >= limiteSaques) {
@@ -187,4 +187,3 @@ public void carregarDadosCSV(String arquivo) throws IOException {
     }
 }
 }
-
