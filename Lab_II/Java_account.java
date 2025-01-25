@@ -160,4 +160,31 @@ public void salvarDadosCSV(String arquivo) throws IOException {
         }
     }
 }
-// tratamemto de excessão
+public void carregarDadosCSV(String arquivo) throws IOException {
+    try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
+        contas.clear();
+        String linha;
+        while ((linha = reader.readLine()) != null) {
+            String[] partes = linha.split(",");
+            String tipo = partes[0];
+            String numero = partes[1];
+            double saldo = Double.parseDouble(partes[2]);
+
+            switch (tipo) {
+                case "ContaCorrente":
+                    contas.add(new ContaCorrente(numero, saldo, 10.0)); //  taxa
+                    break;
+                case "ContaPoupanca":
+                    contas.add(new ContaPoupanca(numero, saldo, 0.02)); // rendimento
+                    break;
+                case "ContaSalario":
+                    contas.add(new ContaSalario(numero, saldo, 3)); // saque
+                    break;
+                default:
+                    throw new IOException("Tipo de conta: " + tipo);
+            }
+        }
+    }
+}
+}
+
