@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Agencia {
     private String codigo;
@@ -35,52 +34,57 @@ public class Agencia {
         }
     }
 
-    public void criarContaInterativa() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite o número da conta: ");
-        String numero = scanner.nextLine();
-
-        System.out.print("Digite o saldo inicial: ");
-        double saldoInicial = scanner.nextDouble();
-
-        System.out.println("Selecione o tipo de conta:");
-        System.out.println("1. Conta Corrente");
-        System.out.println("2. Conta Poupança");
-        System.out.println("3. Conta Salário");
-
-        int tipo = scanner.nextInt();
-        Conta novaConta = null;
-
-        switch (tipo) {
-            case 1:
-                System.out.print("Digite a taxa de manutenção: ");
-                double taxaManutencao = scanner.nextDouble();
-                novaConta = new ContaCorrente(numero, saldoInicial, taxaManutencao);
-                break;
-            case 2:
-                System.out.print("Digite a taxa de rendimento: ");
-                double taxaRendimento = scanner.nextDouble();
-                novaConta = new ContaPoupanca(numero, saldoInicial, taxaRendimento);
-                break;
-            case 3:
-                System.out.print("Digite o limite de saques: ");
-                int limiteSaques = scanner.nextInt();
-                novaConta = new ContaSalario(numero, saldoInicial, limiteSaques);
-                break;
-            default:
-                System.out.println("Opção inválida.");
-                return;
+    public void salvarDados(String arquivo) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(arquivo))) {
+            oos.writeObject(contas);
         }
+    }
 
-        adicionarConta(novaConta);
-        System.out.println("Conta criada com sucesso!");
+    public void carregarDados(String arquivo) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+            contas = (List<Conta>) ois.readObject();
+        }
+    }
+
+    public void salvarDadosCSV(String arquivo) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
+            for (Conta conta : contas) {
+                String tipo = conta.getClass().getSimpleName();
+                writer.write(tipo + "," + conta.getNumero() + "," + conta.getSaldo() + "\n");
+            }
+        }
+    }
+
+    public void carregarDadosCSV(String arquivo) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
+            contas.clear();
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                String[] partes = linha.split(",");
+                String tipo = partes[0];
+                String numero = partes[1];
+                double saldo = Double.parseDouble(partes[2]);
+
+                switch (tipo) {
+                    case "ContaCorrente":
+                        contas.add(new ContaCorrente(numero, saldo, 10.0)); // taxa
+                        break;
+                    case "ContaPoupanca":
+                        contas.add(new ContaPoupanca(numero, saldo, 0.02)); // rendimento
+                        break;
+                    case "ContaSalario":
+                        contas.add(new ContaSalario(numero, saldo, 3)); // limite de saques
+                        break;
+                    default:
+                        throw new IOException("Tipo de conta: " + tipo);
+                }
+            }
+        }
+    }
+
+    public void criarContaInterativa() {
     }
 
     public void exibirContasPorAgencia() {
-        System.out.println("Contas na agência " + codigo + ":");
-        for (Conta conta : contas) {
-            System.out.println("Tipo: " + conta.getClass().getSimpleName() + ", Número: " + conta.getNumero() + ", Saldo: " + conta.getSaldo());
-        }
     }
 }
