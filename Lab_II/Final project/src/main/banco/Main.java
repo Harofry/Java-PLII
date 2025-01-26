@@ -1,129 +1,154 @@
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Banco banco = new Banco(); // Cria o banco principal
+        Banco banco = new Banco();
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            exibirTabela();
-            System.out.print("\nEscolha uma opção: ");
-            int opcao = scanner.nextInt();
-            scanner.nextLine(); // Consumir a nova linha
-
-            switch (opcao) {
-                case 1: // Adicionar nova agência
-                    System.out.print("Digite o código da nova agência: ");
-                    String codigoAgencia = scanner.nextLine();
-                    Agencia novaAgencia = new Agencia(codigoAgencia);
-                    banco.adicionarAgencia(novaAgencia);
-                    System.out.println("Agência " + codigoAgencia + " adicionada com sucesso!");
-                    break;
-
-                case 2: // Selecionar uma agência
-                    System.out.print("Digite o código da agência: ");
-                    String codigo = scanner.nextLine();
-                    try {
-                        Agencia agencia = banco.buscarAgencia(codigo);
-                        menuAgencia(agencia, scanner);
-                    } catch (IllegalArgumentException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-
-                case 3: // Salvar dados em CSV
-                    System.out.print("Digite o nome do arquivo para salvar os dados (exemplo: dados.csv): ");
-                    String arquivoSalvar = scanner.nextLine();
-                    try {
-                        for (Agencia agencia : banco.getAgencias()) {
-                            agencia.salvarDadosCSV(arquivoSalvar);
-                        }
-                        System.out.println("Dados salvos com sucesso em " + arquivoSalvar);
-                    } catch (IOException e) {
-                        System.out.println("Erro ao salvar os dados: " + e.getMessage());
-                    }
-                    break;
-
-                case 4: // Carregar dados de CSV
-                    System.out.print("Digite o nome do arquivo para carregar os dados: ");
-                    String arquivoCarregar = scanner.nextLine();
-                    try {
-                        for (Agencia agencia : banco.getAgencias()) {
-                            agencia.carregarDadosCSV(arquivoCarregar);
-                        }
-                        System.out.println("Dados carregados com sucesso de " + arquivoCarregar);
-                    } catch (IOException e) {
-                        System.out.println("Erro ao carregar os dados: " + e.getMessage());
-                    }
-                    break;
-
-                case 5: // Sair do programa
-                    System.out.println("Encerrando o programa. Até logo!");
-                    scanner.close();
-                    return;
-
-                default:
-                    System.out.println("Opção inválida. Tente novamente.");
-            }
-        }
-    }
-
-    private static void exibirTabela() {
-        System.out.println("\n=== Menu Principal ===");
-        System.out.println("1. Adicionar nova agência");
-        System.out.println("2. Selecionar uma agência");
-        System.out.println("3. Salvar dados das agências e contas em CSV");
-        System.out.println("4. Carregar dados das agências e contas de CSV");
-        System.out.println("5. Sair");
-    }
-
-    private static void menuAgencia(Agencia agencia, Scanner scanner) {
-        while (true) {
-            System.out.println("\n=== Menu da Agência " + agencia.getCodigo() + " ===");
-            System.out.println("1. Criar uma nova conta");
-            System.out.println("2. Exibir contas da agência");
-            System.out.println("3. Buscar conta por número");
-            System.out.println("4. Aplicar taxas ou rendimentos em todas as contas");
-            System.out.println("5. Voltar ao menu principal");
+            System.out.println("\n=== Menu Principal ===");
+            System.out.println("1. Adicionar Agência");
+            System.out.println("2. Selecionar Agência");
+            System.out.println("3. Adicionar Saldo");
+            System.out.println("4. Mostrar Saldo");
+            System.out.println("5. Transferir Saldo");
+            System.out.println("6. Sair");
             System.out.print("Escolha uma opção: ");
 
             int opcao = scanner.nextInt();
             scanner.nextLine(); // Consumir a nova linha
 
             switch (opcao) {
-                case 1: // Criação de uma nova conta
-                    agencia.criarContaInterativa();
+                case 1:
+                    adicionarAgencia(banco, scanner);
                     break;
-
-                case 2: // contas da agência
-                    agencia.exibirContasPorAgencia();
+                case 2:
+                    selecionarAgencia(banco, scanner);
                     break;
-
-                case 3: // Buscando uma conta por número
-                    System.out.print("Digite o número da conta: ");
-                    String numero = scanner.nextLine();
-                    try {
-                        Conta conta = agencia.buscarConta(numero);
-                        System.out.println("Conta encontrada: Tipo: " + conta.getClass().getSimpleName() +
-                                ", Número: " + conta.getNumero() +
-                                ", Saldo: " + conta.getSaldo());
-                    } catch (IllegalArgumentException e) {
-                        System.out.println(e.getMessage());
-                    }
+                case 3:
+                    adicionarSaldo(banco, scanner);
                     break;
-
-                case 4: // Aplicando taxas ou rendimentos
-                    agencia.aplicarTaxasOuRendimentos();
-                    System.out.println("Taxas aplicadas com sucesso.");
+                case 4:
+                    mostrarSaldo(banco, scanner);
                     break;
-
-                case 5: // Voltar ao menu principal
+                case 5:
+                    transferirSaldo(banco, scanner);
+                    break;
+                case 6:
+                    System.out.println("Saindo...");
                     return;
-
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
+        }
+    }
+
+    private static void adicionarAgencia(Banco banco, Scanner scanner) {
+        System.out.print("Digite o código da nova agência: ");
+        String codigoAgencia = scanner.nextLine();
+        Agencia novaAgencia = new Agencia(codigoAgencia);
+        banco.adicionarAgencia(novaAgencia);
+        System.out.println("Agência adicionada com sucesso!");
+    }
+
+    private static void selecionarAgencia(Banco banco, Scanner scanner) {
+        System.out.print("Digite o código da agência: ");
+        String codigo = scanner.nextLine();
+        try {
+            Agencia agencia = banco.buscarAgencia(codigo);
+            exibirMenuAgencia(agencia, scanner);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void exibirMenuAgencia(Agencia agencia, Scanner scanner) {
+        while (true) {
+            System.out.println("\n=== Menu da Agência " + agencia.getCodigo() + " ===");
+            System.out.println("1. Criar Conta");
+            System.out.println("2. Exibir Contas da Agência");
+            System.out.println("3. Voltar ao Menu Principal");
+            System.out.print("Escolha uma opção: ");
+
+            int opcao = scanner.nextInt();
+            scanner.nextLine(); // Consumir a nova linha
+
+            switch (opcao) {
+                case 1:
+                    agencia.criarContaInterativa();
+                    break;
+                case 2:
+                    agencia.exibirContasPorAgencia();
+                    break;
+                case 3:
+                    return;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        }
+    }
+
+    private static void adicionarSaldo(Banco banco, Scanner scanner) {
+        System.out.print("Digite o código da agência: ");
+        String codigoAgencia = scanner.nextLine();
+        System.out.print("Digite o número da conta: ");
+        String numeroConta = scanner.nextLine();
+
+        try {
+            Agencia agencia = banco.buscarAgencia(codigoAgencia);
+            Conta conta = agencia.buscarConta(numeroConta);
+
+            System.out.print("Digite o valor a ser depositado: ");
+            double valor = scanner.nextDouble();
+
+            conta.depositar(valor);
+            System.out.println("Depósito realizado com sucesso!");
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
+    }
+
+    private static void mostrarSaldo(Banco banco, Scanner scanner) {
+        System.out.print("Digite o código da agência: ");
+        String codigoAgencia = scanner.nextLine();
+        System.out.print("Digite o número da conta: ");
+        String numeroConta = scanner.nextLine();
+
+        try {
+            Agencia agencia = banco.buscarAgencia(codigoAgencia);
+            Conta conta = agencia.buscarConta(numeroConta);
+
+            System.out.println("Saldo atual: R$ " + conta.getSaldo());
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
+    }
+
+    private static void transferirSaldo(Banco banco, Scanner scanner) {
+        System.out.print("Digite o código da agência de origem: ");
+        String codigoOrigem = scanner.nextLine();
+        System.out.print("Digite o número da conta de origem: ");
+        String numeroOrigem = scanner.nextLine();
+        System.out.print("Digite o código da agência de destino: ");
+        String codigoDestino = scanner.nextLine();
+        System.out.print("Digite o número da conta de destino: ");
+        String numeroDestino = scanner.nextLine();
+
+        try {
+            Agencia agenciaOrigem = banco.buscarAgencia(codigoOrigem);
+            Conta contaOrigem = agenciaOrigem.buscarConta(numeroOrigem);
+            Agencia agenciaDestino = banco.buscarAgencia(codigoDestino);
+            Conta contaDestino = agenciaDestino.buscarConta(numeroDestino);
+
+            System.out.print("Digite o valor a ser transferido: ");
+            double valor = scanner.nextDouble();
+
+            contaOrigem.sacar(valor);
+            contaDestino.depositar(valor);
+
+            System.out.println("Transferência realizada com sucesso!");
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
         }
     }
 }
